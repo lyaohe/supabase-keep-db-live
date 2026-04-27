@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
 
       # Step 3: Install Supabase Client
       - name: Install Supabase Client
@@ -81,10 +81,10 @@ jobs:
                   const duration = Date.now() - startTime;
 
                   if (error) {
-                    throw new Error(`Query failed: ${error.message} (Status: ${status})`);
+                    throw new Error('Query failed: ' + error.message + ' (Status: ' + status + ')');
                   }
                   
-                  console.log(`Success! Queried table "${tableName}". Response time: ${duration}ms`);
+                  console.log('Success! Queried table \"' + tableName + '\". Response time: ' + duration + 'ms');
                   successCount++;
                   
                 } catch (err) {
