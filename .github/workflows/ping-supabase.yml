@@ -70,22 +70,21 @@ jobs:
                   const supabase = createClient(config.url, config.key);
 
                   // Ping by making an actual network request to verify connectivity
-                  // We'll use a simple REST API call to check if the server is reachable
+                  // 我们必须查询一个真实的表来获取 200 OK 响应，确保 Supabase 将其计为有效活跃度。
+                  const tableName = config.table || 'keep_alive';
+                  
                   const startTime = Date.now();
-                  const response = await fetch(config.url + '/rest/v1/', {
-                    headers: {
-                      'apikey': config.key,
-                      'Authorization': 'Bearer ' + config.key
-                    }
-                  });
+                  const { data, error, status } = await supabase
+                    .from(tableName)
+                    .select('*')
+                    .limit(1);
                   const duration = Date.now() - startTime;
 
-                  // Check if we got a response (even an error response means the server is alive)
-                  if (!response.ok && response.status !== 404 && response.status !== 401) {
-                    throw new Error('Server returned status ' + response.status);
+                  if (error) {
+                    throw new Error(`Query failed: ${error.message} (Status: ${status})`);
                   }
                   
-                  console.log('Success! Response time:', duration + 'ms');
+                  console.log(`Success! Queried table "${tableName}". Response time: ${duration}ms`);
                   successCount++;
                   
                 } catch (err) {
